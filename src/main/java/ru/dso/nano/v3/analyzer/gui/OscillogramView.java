@@ -67,6 +67,9 @@ public class OscillogramView extends JComponent implements MouseListener, MouseM
     @Override
     public void mousePressed(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON1) {
+            if(data == null || data.getData().length == 0) {
+                return;
+            }
             selectionBegin = e.getX();
             selectionEnd = e.getX();
             selectionInProcess = true;

@@ -16,12 +16,13 @@ public class Rule extends JComponent implements MouseMotionListener, MouseListen
     private static final int KNOB_SIZE = 18;
     private static final int KNOB_HALF_SIZE = KNOB_SIZE / 2;
 
-    private Color knob1Color = COLOR_KNOB;
-    private Color knob2Color = COLOR_KNOB;
     private int knob1pos = 10;
     private int knob2pos = 50;
     private OscillogramView view;
     private java.util.List<KnobsListener> listeners = new ArrayList<>();
+
+    private boolean knob1Picked = false;
+    private boolean knob2Picked = false;
 
     public Rule(OscillogramView view) {
         this.view = view;
@@ -44,8 +45,8 @@ public class Rule extends JComponent implements MouseMotionListener, MouseListen
         Rectangle drawHere = g.getClipBounds();
         g.setColor(COLOR_BACKGROUND);
         g.fillRect(drawHere.x, drawHere.y, drawHere.width, drawHere.height);
-        drawKnob(g, knob1pos, knob1Color);
-        drawKnob(g, knob2pos, knob2Color);
+        drawKnob(g, knob1pos, knob1Picked ? COLOR_KNOB_SELECTED : COLOR_KNOB);
+        drawKnob(g, knob2pos, knob2Picked ? COLOR_KNOB_SELECTED : COLOR_KNOB);
     }
 
     private void drawKnob(Graphics g, int pos, Color color) {
@@ -57,25 +58,13 @@ public class Rule extends JComponent implements MouseMotionListener, MouseListen
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if(e.getX() > KNOB_HALF_SIZE && e.getX() < this.getWidth() - KNOB_HALF_SIZE) {
-            if(isKnobHit(knob1pos, e.getX(), e.getY())) {
-                knob1pos = e.getX();
-                this.repaint();
-                view.setMeasureBegin(knob1pos);
-                view.repaint();
-                for(KnobsListener k : listeners) {
-                    k.onKnob1PositionChanged(knob1pos);
-                }
+        if(e.getX() >= 0 && e.getX() <= this.getWidth()) {
+            if(knob1Picked) {
+                moveKnob1(e.getX());
                 return;
             }
-            if(isKnobHit(knob2pos, e.getX(), e.getY())) {
-                knob2pos = e.getX();
-                this.repaint();
-                view.setMeasureEnd(knob2pos);
-                view.repaint();
-                for(KnobsListener k : listeners) {
-                    k.onKnob2PositionChanged(knob2pos);
-                }
+            if(knob2Picked) {
+                moveKnob2(e.getX());
             }
         }
     }
@@ -83,18 +72,18 @@ public class Rule extends JComponent implements MouseMotionListener, MouseListen
     @Override
     public void mouseMoved(MouseEvent e) {
         if(isKnobHit(knob1pos, e.getX(), e.getY())) {
-            knob1Color = COLOR_KNOB_SELECTED;
-            this.repaint();
+            knob1Picked = true;
+            repaint();
             return;
+        } else {
+            knob1Picked = false;
         }
         if(isKnobHit(knob2pos, e.getX(), e.getY())) {
-            knob2Color = COLOR_KNOB_SELECTED;
-            this.repaint();
-            return;
+            knob2Picked = true;
+        } else {
+            knob2Picked = false;
         }
-        knob1Color = COLOR_KNOB;
-        knob2Color = COLOR_KNOB;
-        this.repaint();
+        repaint();
     }
 
     @Override
@@ -104,12 +93,47 @@ public class Rule extends JComponent implements MouseMotionListener, MouseListen
 
     @Override
     public void mousePressed(MouseEvent e) {
+        if(e.getButton() != MouseEvent.BUTTON1) {
+            return;
+        }
+        if(e.getX() >= 0 && e.getX() <= this.getWidth()) {
+            if(isKnobHit(knob1pos, e.getX(), e.getY())) {
+                moveKnob1(e.getX());
+                return;
+            }
+            if(isKnobHit(knob2pos, e.getX(), e.getY())) {
+                moveKnob2(e.getX());
+            }
+        }
+    }
 
+    private void moveKnob1(int newPos) {
+        knob1pos = newPos;
+        this.repaint();
+        view.setMeasureBegin(knob1pos);
+        view.repaint();
+        for(KnobsListener k : listeners) {
+            k.onKnob1PositionChanged(knob1pos);
+        }
+        knob1Picked = true;
+    }
+
+    private void moveKnob2(int newPos) {
+        knob2pos = newPos;
+        this.repaint();
+        view.setMeasureEnd(knob2pos);
+        view.repaint();
+        for(KnobsListener k : listeners) {
+            k.onKnob2PositionChanged(knob2pos);
+        }
+        knob2Picked = true;
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        knob2Picked = false;
+        knob2Picked = false;
+        repaint();
     }
 
     @Override
@@ -119,8 +143,9 @@ public class Rule extends JComponent implements MouseMotionListener, MouseListen
 
     @Override
     public void mouseExited(MouseEvent e) {
-        knob1Color = COLOR_KNOB;
-        knob2Color = COLOR_KNOB;
+        knob1Picked = false;
+        knob2Picked = false;
+        repaint();
     }
 
     private boolean isKnobHit(int knobPos, int x, int y) {

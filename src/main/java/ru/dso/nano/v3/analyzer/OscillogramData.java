@@ -14,6 +14,12 @@ public class OscillogramData implements Serializable {
     }
 
     private void calc(int[] data) {
+        if(data.length == 0) {
+            min = 0;
+            max = 0;
+            average = 0;
+            return;
+        }
         min = Integer.MAX_VALUE;
         max = Integer.MIN_VALUE;
         average = 0;

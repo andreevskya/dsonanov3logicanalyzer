@@ -14,12 +14,16 @@ public class CsvParser {
         List<String> lines = Files.readAllLines(csvFile.toPath());
         for(String line : lines.subList(1, lines.size() - 1)) {
             line = line.trim().replace(",", "");
+            if(line.startsWith(HEADER_START)) {
+                continue;
+            }
             if(!line.isEmpty()) {
                 try {
                     int value = Integer.parseInt(line, 10);
                     data.add(value);
                 } catch(NumberFormatException nfe) {
                     System.err.println("\"" + line + "\" is not a valid integer");
+                    return new OscillogramData(new int[0]);
                 }
             }
         }
