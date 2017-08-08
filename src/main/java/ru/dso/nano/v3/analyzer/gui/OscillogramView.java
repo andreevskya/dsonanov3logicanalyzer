@@ -95,7 +95,7 @@ public class OscillogramView extends JComponent implements MouseListener, MouseM
 
     @Override
     public void mouseEntered(MouseEvent e) {
-
+        outsideScroll = 0;
     }
 
     @Override
@@ -113,11 +113,15 @@ public class OscillogramView extends JComponent implements MouseListener, MouseM
                     parentScrollBar.setValueIsAdjusting(false);
                 }
             }
-            if(selectionEnd < data.getData().length) {
-                selectionEnd = e.getX();
-                for (SelectionListener listener : selectionListeners) {
-                    listener.onSelectionChanged(selectionEnd);
-                }
+            selectionEnd = e.getX();
+            if(selectionEnd > data.getData().length) {
+                selectionEnd = data.getData().length;
+            }
+            if(selectionEnd < 0) {
+                selectionEnd = 0;
+            }
+            for (SelectionListener listener : selectionListeners) {
+                listener.onSelectionChanged(selectionEnd);
             }
             this.repaint();
         }

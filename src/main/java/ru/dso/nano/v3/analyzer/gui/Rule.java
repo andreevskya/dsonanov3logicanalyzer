@@ -60,7 +60,7 @@ public class Rule extends JComponent implements MouseMotionListener, MouseListen
     public void mouseDragged(MouseEvent e) {
         if(e.getX() >= 0 && e.getX() <= this.getWidth()) {
             if(knob1Picked) {
-                moveKnob1(e.getX());
+                moveKnob1(Math.abs(e.getX()));
                 return;
             }
             if(knob2Picked) {
@@ -78,11 +78,7 @@ public class Rule extends JComponent implements MouseMotionListener, MouseListen
         } else {
             knob1Picked = false;
         }
-        if(isKnobHit(knob2pos, e.getX(), e.getY())) {
-            knob2Picked = true;
-        } else {
-            knob2Picked = false;
-        }
+        knob2Picked = isKnobHit(knob2pos, e.getX(), e.getY());
         repaint();
     }
 
@@ -93,18 +89,7 @@ public class Rule extends JComponent implements MouseMotionListener, MouseListen
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if(e.getButton() != MouseEvent.BUTTON1) {
-            return;
-        }
-        if(e.getX() >= 0 && e.getX() <= this.getWidth()) {
-            if(isKnobHit(knob1pos, e.getX(), e.getY())) {
-                moveKnob1(e.getX());
-                return;
-            }
-            if(isKnobHit(knob2pos, e.getX(), e.getY())) {
-                moveKnob2(e.getX());
-            }
-        }
+
     }
 
     private void moveKnob1(int newPos) {
