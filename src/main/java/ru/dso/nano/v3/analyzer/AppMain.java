@@ -5,10 +5,12 @@ import ru.dso.nano.v3.analyzer.resources.Strings;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
-public class AppMain {
+public class AppMain implements ActionListener {
     private static final int MAIN_WINDOW_WIDTH = 640;
     private static final int MAIN_WINDOW_HEIGHT = 320;
 
@@ -24,6 +26,7 @@ public class AppMain {
     private MainMenu menu;
 
     private OscillogramData oscillogramData = null;
+    private LogicAnalyzer logicAnalyzer = new LogicAnalyzer();
 
     public AppMain() {
         createGui();
@@ -62,6 +65,7 @@ public class AppMain {
         selectionRule.addKnobListener(selectionBriefPanel);
         oscillogramView.addSelectionListener(selectionBriefPanel);
         oscillogramView.addSelectionListener(analyzePanel);
+        analyzePanel.addButtonListener(this);
 
         menu = new MainMenu(this);
         frame.setJMenuBar(menu.getMenu());
@@ -100,5 +104,18 @@ public class AppMain {
 
     public void exit() {
         System.exit(0);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        int start = Math.min(oscillogramView.getSelectionBegin(), oscillogramView.getSelectionEnd());
+        int end = Math.max(oscillogramView.getSelectionBegin(), oscillogramView.getSelectionEnd());
+        boolean[] logicData = logicAnalyzer.analyze(oscillogramData, start, end, analyzePanel.getLogicOne(), analyzePanel.getLogicZero());
+        StringBuilder data = new StringBuilder();
+        for(boolean b : logicData) {
+            data.append(b ? "1" : "0");
+        }
+        data.append("\n");
+        textArea.append(data.toString());
     }
 }
