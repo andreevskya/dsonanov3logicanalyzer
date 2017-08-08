@@ -59,7 +59,8 @@ public class AppMain implements ActionListener {
         selectionBriefPanel.setMeasure2Value(oscillogramView.getMeasureEnd());
         containerPanel.add(selectionBriefPanel.getPanel());
         containerPanel.add(analyzePanel.getPanel());
-        containerPanel.add(textArea);
+        JScrollPane textAreaScroll = new JScrollPane(textArea);
+        containerPanel.add(textAreaScroll);
         mainPanel.add(containerPanel, BorderLayout.PAGE_END);
 
         selectionRule.addKnobListener(selectionBriefPanel);
@@ -104,6 +105,31 @@ public class AppMain implements ActionListener {
 
     public void exit() {
         System.exit(0);
+    }
+
+    public void deleteSelected() {
+        if(oscillogramView.getSelectionBegin() != oscillogramView.getSelectionEnd()) {
+            int start = Math.min(oscillogramView.getSelectionBegin(), oscillogramView.getSelectionEnd());
+            int end = Math.max(oscillogramView.getSelectionBegin(), oscillogramView.getSelectionEnd());
+            oscillogramData.removeRange(start, end);
+            dataStatisticPanel.setStatistic(oscillogramData);
+            oscillogramView.setOscillogramData(oscillogramData);
+            analyzePanel.setMaxValue(oscillogramData.getData().length);
+
+            oscillogramView.resetSelection();
+            oscillogramView.invalidate();
+            oscillogramViewScrollPane.repaint();
+        }
+    }
+
+    public void selectAll() {
+        if(oscillogramData == null || oscillogramData.getData().length == 0) {
+            return;
+        }
+        oscillogramView.setSelectionBegin(0);
+        oscillogramView.setSelectionEnd(oscillogramData.getData().length);
+        oscillogramView.invalidate();
+        oscillogramViewScrollPane.repaint();
     }
 
     @Override

@@ -1,7 +1,5 @@
 package ru.dso.nano.v3.analyzer.gui;
 
-
-import javafx.stage.FileChooser;
 import ru.dso.nano.v3.analyzer.AppMain;
 import ru.dso.nano.v3.analyzer.resources.Strings;
 
@@ -13,6 +11,8 @@ public class MainMenu implements ActionListener {
     private JMenuBar menubar;
     private JMenuItem menuFileOpen;
     private JMenuItem menuFileExit;
+    private JMenuItem menuEditSelectAll;
+    private JMenuItem menuEditDelete;
 
     private AppMain app;
 
@@ -25,7 +25,15 @@ public class MainMenu implements ActionListener {
         menuFile.add(menuFileOpen);
         menuFile.addSeparator();
         menuFile.add(menuFileExit);
+        JMenu menuEdit = new JMenu(Strings.MENU_EDIT.getString());
+        menuEditDelete = createMenuItem(Strings.MENU_EDIT_DELETE.getString());
+        menuEdit.add(menuEditDelete);
+        menuEditSelectAll = createMenuItem(Strings.MENU_EDIT_SELECT_ALL.getString());
+        menuEdit.addSeparator();
+        menuEdit.add(menuEditSelectAll);
+
         menubar.add(menuFile);
+        menubar.add(menuEdit);
     }
 
     private JMenuItem createMenuItem(String name) {
@@ -42,6 +50,12 @@ public class MainMenu implements ActionListener {
         }
         if(e.getSource() == menuFileExit) {
             app.exit();
+        }
+        if(e.getSource() == menuEditDelete) {
+            app.deleteSelected();
+        }
+        if(e.getSource() == menuEditSelectAll) {
+            app.selectAll();
         }
     }
 

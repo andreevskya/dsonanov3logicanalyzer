@@ -93,6 +93,13 @@ public class OscillogramView extends JComponent implements MouseListener, MouseM
         outsideScroll = 0;
     }
 
+    public void resetSelection() {
+        selectionBegin = selectionEnd = 0;
+        for(SelectionListener listener : selectionListeners) {
+            listener.onSelectionReset();
+        }
+    }
+
     @Override
     public void mouseEntered(MouseEvent e) {
         outsideScroll = 0;

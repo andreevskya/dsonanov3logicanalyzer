@@ -13,6 +13,14 @@ public class OscillogramData implements Serializable {
         calc(data);
     }
 
+    public void removeRange(int from, int to) {
+        int newData[] = new int[data.length - (to - from)];
+        System.arraycopy(data, 0, newData, 0, from);
+        System.arraycopy(data, to, newData, from, data.length - to);
+        data = newData;
+        calc(data);
+    }
+
     private void calc(int[] data) {
         if(data.length == 0) {
             min = 0;
