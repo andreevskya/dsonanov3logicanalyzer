@@ -28,6 +28,11 @@ public class AppMain implements ActionListener {
     private OscillogramData oscillogramData = null;
     private LogicAnalyzer logicAnalyzer = new LogicAnalyzer();
 
+    public AppMain(File file) {
+        this();
+        open(file);
+    }
+
     public AppMain() {
         createGui();
     }
